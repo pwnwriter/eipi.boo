@@ -20,23 +20,23 @@
         default = pkgs.mkShell {
 
           packages = with pkgs; [
-            flyctl
+            # flyctl
           ];
 
           shellHook = ''
             echo "------eipi.boo--------"
           '';
 
-          env = {
-            # Linux
-            LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-              pkgs.stdenv.cc.cc.lib
-            ];
-            # MacOS
-            DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-              pkgs.stdenv.cc.cc.lib
-            ];
-          };
+          # env = {
+          #   # Linux
+          #   LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+          #     pkgs.stdenv.cc.cc.lib
+          #   ];
+          #   # MacOS
+          #   DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+          #     pkgs.stdenv.cc.cc.lib
+          #   ];
+          # };
         };
       });
     };
