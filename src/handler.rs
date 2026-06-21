@@ -3,6 +3,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use async_trait::async_trait;
 use crossterm::cursor;
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use log::{debug, info, warn};
 use ratatui::Terminal;
@@ -92,6 +93,20 @@ impl ClientHandler {
                 }
             }
         };
+    }
+
+    fn select_at_screen(&mut self, sx: u16, sy: u16) {
+        let world_x = sx as i64 + self.cam_x;
+        let world_y = sy as i64 + self.cam_y;
+
+        for (i, c) in self.confessions.iter().enumerate() {
+            let bw = confession::BOX_WIDTH as i64;
+            let bh = confession::confession_height(&c.text) as i64;
+            if world_x >= c.x && world_x < c.x + bw && world_y >= c.y && world_y < c.y + bh {
+                self.selected = Some(i);
+                return;
+            }
+        }
     }
 
     fn upvote_selected(&mut self) {
@@ -184,6 +199,9 @@ impl ClientHandler {
                     self.mode = InputMode::Compose;
                     self.compose_buf.clear();
                 }
+                (InputMode::Browse, KeyEvent::MouseClick(sx, sy)) => {
+                    self.select_at_screen(*sx, *sy);
+                }
                 (InputMode::Browse, KeyEvent::Char('?')) => {
                     self.message = Some(
                         "bugs/features → https://github.com/pwnwriter/eipi.boo/issues/new"
@@ -246,7 +264,7 @@ impl ClientHandler {
     }
 
     fn init_terminal(&mut self) -> Vec<u8> {
-        crossterm::execute!(self.writer, EnterAlternateScreen, cursor::Hide).ok();
+        crossterm::execute!(self.writer, EnterAlternateScreen, cursor::Hide, EnableMouseCapture).ok();
         let init_bytes = self.writer.drain();
 
         match crate::tui::create_terminal(self.writer.clone(), self.width, self.height) {
@@ -261,7 +279,7 @@ impl ClientHandler {
     }
 
     fn cleanup_bytes(&mut self) -> Vec<u8> {
-        crossterm::execute!(self.writer, cursor::Show, LeaveAlternateScreen).ok();
+        crossterm::execute!(self.writer, DisableMouseCapture, cursor::Show, LeaveAlternateScreen).ok();
         self.writer.drain()
     }
 }
