@@ -6,7 +6,8 @@ pub fn get_all(conn: &Connection) -> Vec<Confession> {
     let mut stmt = conn
         .prepare(
             "SELECT c.id, c.text, c.x, c.y, c.votes,
-                    (SELECT COUNT(*) FROM replies r WHERE r.confession_id = c.id)
+                    (SELECT COUNT(*) FROM replies r WHERE r.confession_id = c.id),
+                    c.created_at
              FROM confessions c ORDER BY c.id",
         )
         .unwrap();
@@ -19,6 +20,7 @@ pub fn get_all(conn: &Connection) -> Vec<Confession> {
             y: row.get(3)?,
             votes: row.get(4)?,
             reply_count: row.get(5)?,
+            created_at: row.get(6)?,
         })
     })
     .unwrap()
@@ -45,6 +47,10 @@ pub fn insert(
         y,
         votes: 0,
         reply_count: 0,
+        created_at: chrono::Utc::now()
+            .naive_utc()
+            .format("%Y-%m-%d %H:%M:%S")
+            .to_string(),
     })
 }
 

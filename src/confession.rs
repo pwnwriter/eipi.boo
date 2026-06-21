@@ -6,6 +6,27 @@ pub struct Confession {
     pub y: i64,
     pub votes: i64,
     pub reply_count: i64,
+    pub created_at: String,
+}
+
+pub fn time_ago(created_at: &str) -> String {
+    let Ok(created) = chrono::NaiveDateTime::parse_from_str(created_at, "%Y-%m-%d %H:%M:%S") else {
+        return String::new();
+    };
+    let now = chrono::Utc::now().naive_utc();
+    let diff = now - created;
+
+    if diff.num_seconds() < 60 {
+        "just now".into()
+    } else if diff.num_minutes() < 60 {
+        format!("{}m ago", diff.num_minutes())
+    } else if diff.num_hours() < 24 {
+        format!("{}h ago", diff.num_hours())
+    } else if diff.num_days() < 30 {
+        format!("{}d ago", diff.num_days())
+    } else {
+        format!("{}mo ago", diff.num_days() / 30)
+    }
 }
 
 pub const MAX_LENGTH: usize = 280;

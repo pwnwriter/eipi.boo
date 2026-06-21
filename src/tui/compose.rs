@@ -1,8 +1,8 @@
+use ratatui::Frame;
 use ratatui::layout::{Alignment, Rect};
 use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Clear, Paragraph, Wrap};
-use ratatui::Frame;
 
 pub fn render_confession(frame: &mut Frame, buf: &str, area: Rect) {
     let popup_w = 50u16.min(area.width.saturating_sub(4));

@@ -702,6 +702,7 @@ name = "eipi"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "crossterm",
  "env_logger",
  "log",

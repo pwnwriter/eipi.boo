@@ -4,7 +4,7 @@ use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Paragraph, Wrap};
 
-use crate::confession::Confession;
+use crate::confession::{self, Confession};
 
 pub fn render(frame: &mut Frame, c: &Confession, area: Rect, selected: bool, has_voted: bool) {
     let border_style = if selected {
@@ -29,9 +29,20 @@ pub fn render(frame: &mut Frame, c: &Confession, area: Rect, selected: bool, has
     };
     let vote_display = format!("{}{} {}", reply_str, heart, c.votes);
 
-    let mut block = Block::bordered().border_style(border_style).title_bottom(
-        Line::from(Span::styled(vote_display, Style::default().fg(Color::Red))).right_aligned(),
-    );
+    let age = confession::time_ago(&c.created_at);
+
+    let mut block = Block::bordered()
+        .border_style(border_style)
+        .title_top(
+            Line::from(Span::styled(
+                format!(" {} ", age),
+                Style::default().fg(Color::Indexed(242)),
+            ))
+            .right_aligned(),
+        )
+        .title_bottom(
+            Line::from(Span::styled(vote_display, Style::default().fg(Color::Red))).right_aligned(),
+        );
 
     if selected {
         block = block.title(Line::from(Span::styled(
