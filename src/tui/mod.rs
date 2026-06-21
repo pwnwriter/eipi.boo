@@ -1,6 +1,7 @@
 mod compose;
 mod confession_box;
 mod reply_panel;
+mod statusline;
 
 use std::io::Write;
 use std::sync::{Arc, Mutex};
@@ -84,7 +85,7 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
 
     let reply_open = matches!(state.mode, InputMode::ViewReplies | InputMode::ComposeReply);
 
-    let chunks = Layout::vertical([Constraint::Min(0), Constraint::Length(1)]).split(area);
+    let chunks = Layout::vertical([Constraint::Min(0), Constraint::Length(3)]).split(area);
     let main_area = chunks[0];
     let status_area = chunks[1];
 
@@ -149,52 +150,7 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
         reply_panel::render(frame, state, rarea);
     }
 
-    let status_text = match state.mode {
-        InputMode::Browse => {
-            if let Some(msg) = state.message {
-                msg.to_string()
-            } else {
-                format!(
-                    " {} confessions by {} humans | [hjkl/←↑↓→] Scroll  [Tab] Select  [v] Vote  [Enter] Replies  [n] New  [q] Quit",
-                    state.total_confessions, state.total_humans
-                )
-            }
-        }
-        InputMode::Compose => {
-            format!(
-                " Confess ({}/{}) | [Enter] Submit  [Esc] Cancel",
-                state.compose_buf.len(),
-                confession::MAX_LENGTH,
-            )
-        }
-        InputMode::ViewReplies => {
-            if let Some(msg) = state.message {
-                msg.to_string()
-            } else {
-                format!(
-                    " {} replies | [r] Reply  [jk/↑↓] Scroll  [v] Vote  [Esc] Back",
-                    state.replies.len()
-                )
-            }
-        }
-        InputMode::ComposeReply => {
-            if state.reply_name_phase {
-                format!(
-                    " Name (optional, max 20): {}_ | [Enter] Next  [Esc] Cancel",
-                    state.reply_name_buf
-                )
-            } else {
-                format!(
-                    " Reply ({}/{}) | [Enter] Submit  [Esc] Cancel",
-                    state.compose_buf.len(),
-                    crate::reply::MAX_LENGTH,
-                )
-            }
-        }
-    };
-    let status =
-        Paragraph::new(status_text).style(Style::default().bg(Color::DarkGray).fg(Color::White));
-    frame.render_widget(status, status_area);
+    statusline::render(frame, state, status_area);
 
     if state.mode == InputMode::Compose {
         compose::render_confession(frame, state.compose_buf, area);
@@ -202,5 +158,9 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
 
     if state.mode == InputMode::ComposeReply && !state.reply_name_phase {
         compose::render_reply(frame, state.compose_buf, state.reply_name_buf, area);
+    }
+
+    if state.mode == InputMode::ConfirmQuit {
+        compose::render_quit(frame, area);
     }
 }
