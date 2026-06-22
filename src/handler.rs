@@ -69,10 +69,16 @@ impl ClientHandler {
         }
     }
 
-    fn fingerprint_str(&self) -> String {
-        self.fingerprint
-            .clone()
-            .unwrap_or_else(|| "unknown".to_string())
+    fn return_mode(&self) -> InputMode {
+        if self.came_from_card {
+            InputMode::CardView
+        } else {
+            InputMode::Browse
+        }
+    }
+
+    fn fingerprint_str(&self) -> &str {
+        self.fingerprint.as_deref().unwrap_or("unknown")
     }
 
     fn reload_confessions(&mut self) {
@@ -132,7 +138,7 @@ impl ClientHandler {
         let fp = self.fingerprint_str();
 
         let db = self.shared.db.lock().unwrap();
-        match db::upvote(&db, confession_id, &fp) {
+        match db::upvote(&db, confession_id, fp) {
             Ok(new_votes) => {
                 self.message = Some(format!("Upvoted! (♥ {})", new_votes));
             }
@@ -195,7 +201,7 @@ impl ClientHandler {
         };
 
         let db = self.shared.db.lock().unwrap();
-        match db::insert_reply(&db, confession.id, &text, name.as_deref(), &fp) {
+        match db::insert_reply(&db, confession.id, &text, name.as_deref(), fp) {
             Ok(_) => {
                 self.message = Some("Reply posted!".to_string());
             }
@@ -209,14 +215,7 @@ impl ClientHandler {
         self.reply_name_buf.clear();
         self.reload_replies();
         self.reload_confessions();
-        if self.came_from_card {
-            self.mode = InputMode::CardView;
-            self.came_from_card = false;
-            self.viewing_confession = None;
-            self.replies.clear();
-        } else {
-            self.mode = InputMode::ViewReplies;
-        }
+        self.mode = InputMode::ViewReplies;
     }
 
     fn submit_confession(&mut self) {
@@ -234,14 +233,14 @@ impl ClientHandler {
             return;
         }
 
-        let fp = self.fingerprint_str();
+        let fp = self.fingerprint_str().to_owned();
         let db = self.shared.db.lock().unwrap();
 
         let today = db::posts_today(&db, &fp);
-        if today >= db::DAILY_POST_LIMIT {
+        if today >= crate::consts::DAILY_POST_LIMIT {
             self.message = Some(format!(
                 "Rate limit: {} confessions per day",
-                db::DAILY_POST_LIMIT
+                crate::consts::DAILY_POST_LIMIT
             ));
             return;
         }
@@ -354,12 +353,8 @@ impl ClientHandler {
                 }
 
                 (InputMode::ViewReplies, KeyEvent::Escape | KeyEvent::Char('q')) => {
-                    if self.came_from_card {
-                        self.mode = InputMode::CardView;
-                        self.came_from_card = false;
-                    } else {
-                        self.mode = InputMode::Browse;
-                    }
+                    self.mode = self.return_mode();
+                    self.came_from_card = false;
                     self.viewing_confession = None;
                     self.replies.clear();
                 }
@@ -409,20 +404,12 @@ impl ClientHandler {
                 }
 
                 (InputMode::Compose, KeyEvent::Escape) => {
-                    self.mode = if self.came_from_card {
-                        InputMode::CardView
-                    } else {
-                        InputMode::Browse
-                    };
+                    self.mode = self.return_mode();
                     self.compose_buf.clear();
                 }
                 (InputMode::Compose, KeyEvent::Enter) => {
                     self.submit_confession();
-                    self.mode = if self.came_from_card {
-                        InputMode::CardView
-                    } else {
-                        InputMode::Browse
-                    };
+                    self.mode = self.return_mode();
                 }
                 (InputMode::Compose, KeyEvent::Char(c))
                     if self.compose_buf.len() < confession::MAX_LENGTH =>
@@ -439,7 +426,7 @@ impl ClientHandler {
     }
 
     fn do_render(&mut self) -> Vec<u8> {
-        let fp = self.fingerprint_str();
+        let fp = self.fingerprint_str().to_owned();
 
         let Some(terminal) = self.terminal.as_mut() else {
             debug!("do_render: no terminal initialized");
@@ -674,13 +661,8 @@ impl server::Handler for ClientHandler {
         self.width = col_width as u16;
         self.height = row_height as u16;
 
-        if self.terminal.is_some() {
-            self.terminal = None;
-            if let Ok(t) = crate::tui::create_terminal(self.writer.clone(), self.width, self.height)
-            {
-                self.terminal = Some(t);
-            }
-        }
+        self.terminal =
+            crate::tui::create_terminal(self.writer.clone(), self.width, self.height).ok();
 
         let output = self.do_render();
         if !output.is_empty() {

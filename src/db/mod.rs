@@ -4,7 +4,7 @@ mod vote;
 
 use rusqlite::{Connection, Result as SqlResult};
 
-pub use confession::{DAILY_POST_LIMIT, get_all, insert, posts_today, stats};
+pub use confession::{get_all, insert, posts_today, stats};
 pub use reply::{get_replies, insert_reply};
 pub use vote::{upvote, voted_confession_ids};
 

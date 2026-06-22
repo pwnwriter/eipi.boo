@@ -195,77 +195,7 @@ pub fn render(frame: &mut Frame, state: &RenderState, area: Rect) {
     let card_rect = Rect::new(cx, cy, card_w as u16, total_h);
     frame.render_widget(paragraph, card_rect);
 
-    // glow sparkles around the card for popular confessions
     if c.votes > consts::VOTES_GLOW {
-        render_card_glow(frame, c.votes, card_rect, area);
-    }
-}
-
-const SPARKLES: [char; 4] = ['✦', '✧', '·', '*'];
-
-fn sparkle_hash(x: u16, y: u16) -> u64 {
-    let mut h = (x as u64).wrapping_mul(374761393);
-    h = h.wrapping_add((y as u64).wrapping_mul(668265263));
-    h ^= h >> 13;
-    h = h.wrapping_mul(1274126177);
-    h ^= h >> 16;
-    h
-}
-
-fn render_card_glow(frame: &mut Frame, votes: i64, card: Rect, area: Rect) {
-    let density = if votes > consts::VOTES_MAGENTA {
-        consts::GLOW_DENSITY_HIGH
-    } else {
-        consts::GLOW_DENSITY_LOW
-    };
-    let color = if votes > consts::VOTES_MAGENTA {
-        Color::Magenta
-    } else {
-        Color::Cyan
-    };
-
-    let buf = frame.buffer_mut();
-
-    for ring in 1..=2u16 {
-        let top = card.y.saturating_sub(ring);
-        let bot = card.y + card.height + ring - 1;
-        let left = card.x.saturating_sub(ring);
-        let right = card.x + card.width + ring - 1;
-
-        for y in top..=bot {
-            for x in left..=right {
-                // only the ring edge
-                let inside = x >= card.x && x < card.x + card.width
-                    && y >= card.y && y < card.y + card.height;
-                if inside {
-                    continue;
-                }
-
-                if x < area.x || x >= area.x + area.width || y < area.y || y >= area.y + area.height {
-                    continue;
-                }
-
-                let h = sparkle_hash(x, y);
-                if !h.is_multiple_of(density) {
-                    continue;
-                }
-
-                let cell = &buf[(x, y)];
-                if cell.symbol() != " " {
-                    continue;
-                }
-
-                let sparkle = SPARKLES[(h / 7 % SPARKLES.len() as u64) as usize];
-                let style = if ring == 1 {
-                    Style::default().fg(color)
-                } else {
-                    Style::default().fg(Color::Indexed(238))
-                };
-
-                let cell = &mut buf[(x, y)];
-                cell.set_char(sparkle);
-                cell.set_style(style);
-            }
-        }
+        super::glow::render_ring(frame, c.votes, card_rect, area);
     }
 }

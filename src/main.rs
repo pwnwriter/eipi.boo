@@ -1,7 +1,7 @@
 mod blocked_items;
 mod canvas;
 mod confession;
-pub mod consts;
+mod consts;
 mod db;
 mod handler;
 mod input;

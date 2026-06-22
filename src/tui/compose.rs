@@ -4,98 +4,61 @@ use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Clear, Paragraph, Wrap};
 
+fn centered_popup(frame: &mut Frame, area: Rect, w: u16, h: u16) -> Rect {
+    let pw = w.min(area.width.saturating_sub(4));
+    let ph = h.min(area.height.saturating_sub(4));
+    let popup = Rect::new(
+        (area.width.saturating_sub(pw)) / 2,
+        (area.height.saturating_sub(ph)) / 2,
+        pw,
+        ph,
+    );
+    frame.render_widget(Clear, popup);
+    popup
+}
+
+fn text_input(frame: &mut Frame, buf: &str, placeholder: &str, inner: Rect) {
+    let (text, style) = if buf.is_empty() {
+        (placeholder.to_string(), Style::default().fg(Color::DarkGray))
+    } else {
+        (format!("{}_", buf), Style::default().fg(Color::White))
+    };
+    frame.render_widget(
+        Paragraph::new(text).style(style).wrap(Wrap { trim: true }),
+        inner,
+    );
+}
+
 pub fn render_confession(frame: &mut Frame, buf: &str, area: Rect) {
-    let popup_w = 50u16.min(area.width.saturating_sub(4));
-    let popup_h = 8u16.min(area.height.saturating_sub(4));
-    let popup_x = (area.width.saturating_sub(popup_w)) / 2;
-    let popup_y = (area.height.saturating_sub(popup_h)) / 2;
-
-    let popup_area = Rect::new(popup_x, popup_y, popup_w, popup_h);
-
-    frame.render_widget(Clear, popup_area);
-
+    let popup = centered_popup(frame, area, 50, 8);
     let block = Block::bordered()
         .border_style(Style::default().fg(Color::Yellow))
         .title(" New Confession ");
-
-    let inner = block.inner(popup_area);
-    frame.render_widget(block, popup_area);
-
-    let display_text = if buf.is_empty() {
-        "Type your confession...".to_string()
-    } else {
-        format!("{}_", buf)
-    };
-
-    let text_style = if buf.is_empty() {
-        Style::default().fg(Color::DarkGray)
-    } else {
-        Style::default().fg(Color::White)
-    };
-
-    let paragraph = Paragraph::new(display_text)
-        .style(text_style)
-        .wrap(Wrap { trim: true });
-
-    frame.render_widget(paragraph, inner);
+    let inner = block.inner(popup);
+    frame.render_widget(block, popup);
+    text_input(frame, buf, "Type your confession...", inner);
 }
 
 pub fn render_reply(frame: &mut Frame, buf: &str, name: &str, area: Rect) {
-    let popup_w = 50u16.min(area.width.saturating_sub(4));
-    let popup_h = 8u16.min(area.height.saturating_sub(4));
-    let popup_x = (area.width.saturating_sub(popup_w)) / 2;
-    let popup_y = (area.height.saturating_sub(popup_h)) / 2;
-
-    let popup_area = Rect::new(popup_x, popup_y, popup_w, popup_h);
-
-    frame.render_widget(Clear, popup_area);
-
+    let popup = centered_popup(frame, area, 50, 8);
     let title = if name.is_empty() {
         " Reply as anon ".to_string()
     } else {
         format!(" Reply as {} ", name)
     };
-
     let block = Block::bordered()
         .border_style(Style::default().fg(Color::Cyan))
         .title(title);
-
-    let inner = block.inner(popup_area);
-    frame.render_widget(block, popup_area);
-
-    let display_text = if buf.is_empty() {
-        "Type your reply...".to_string()
-    } else {
-        format!("{}_", buf)
-    };
-
-    let text_style = if buf.is_empty() {
-        Style::default().fg(Color::DarkGray)
-    } else {
-        Style::default().fg(Color::White)
-    };
-
-    let paragraph = Paragraph::new(display_text)
-        .style(text_style)
-        .wrap(Wrap { trim: true });
-
-    frame.render_widget(paragraph, inner);
+    let inner = block.inner(popup);
+    frame.render_widget(block, popup);
+    text_input(frame, buf, "Type your reply...", inner);
 }
 
 pub fn render_quit(frame: &mut Frame, area: Rect) {
-    let popup_w = 40u16.min(area.width.saturating_sub(4));
-    let popup_h = 7u16.min(area.height.saturating_sub(4));
-    let popup_x = (area.width.saturating_sub(popup_w)) / 2;
-    let popup_y = (area.height.saturating_sub(popup_h)) / 2;
-
-    let popup_area = Rect::new(popup_x, popup_y, popup_w, popup_h);
-
-    frame.render_widget(Clear, popup_area);
-
+    let popup = centered_popup(frame, area, 40, 7);
     let block = Block::bordered().border_style(Style::default().fg(Color::Red));
-
-    let inner = block.inner(popup_area);
-    frame.render_widget(block, popup_area);
+    let inner = block.inner(popup);
+    frame.render_widget(block, popup);
 
     let lines = vec![
         Line::from(""),
@@ -118,6 +81,5 @@ pub fn render_quit(frame: &mut Frame, area: Rect) {
         ]),
     ];
 
-    let paragraph = Paragraph::new(lines).alignment(Alignment::Center);
-    frame.render_widget(paragraph, inner);
+    frame.render_widget(Paragraph::new(lines).alignment(Alignment::Center), inner);
 }

@@ -97,10 +97,6 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
     if state.mode == InputMode::CardView {
         card_view::render(frame, state, main_area);
         statusline::render(frame, state, status_area);
-
-        if state.mode == InputMode::Compose {
-            compose::render_confession(frame, state.compose_buf, area);
-        }
         return;
     }
 
