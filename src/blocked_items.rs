@@ -1,3 +1,5 @@
+// CREDIT: https://github.com/CaffeineDuck/Balderdash
+
 pub const BLOCKED_WORDS: &[&str] = &[
     "2 girls 1 cup",
     "2g1c",
