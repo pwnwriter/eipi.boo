@@ -1,6 +1,7 @@
 mod card_view;
 mod compose;
 mod confession_box;
+mod glow;
 mod reply_panel;
 mod statusline;
 
@@ -166,6 +167,8 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
         let has_voted = state.voted_ids.contains(&c.id);
         confession_box::render(frame, c, rect, is_selected, has_voted);
     }
+
+    glow::render(frame, state.confessions, state.cam_x, state.cam_y, canvas_area);
 
     if state.confessions.is_empty() {
         let hint = Paragraph::new("No confessions yet. Press [n] to write the first one.")

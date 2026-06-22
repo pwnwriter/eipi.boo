@@ -5,17 +5,18 @@ use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Paragraph, Wrap};
 
 use crate::confession::{self, Confession};
+use crate::consts;
 
 pub fn render(frame: &mut Frame, c: &Confession, area: Rect, selected: bool, has_voted: bool) {
     let border_style = if selected {
         Style::default()
             .fg(Color::Yellow)
             .add_modifier(Modifier::BOLD)
-    } else if c.votes > 50 {
+    } else if c.votes > consts::VOTES_MAGENTA {
         Style::default()
             .fg(Color::Magenta)
             .add_modifier(Modifier::BOLD)
-    } else if c.votes > 10 {
+    } else if c.votes > consts::VOTES_CYAN {
         Style::default().fg(Color::Cyan)
     } else {
         Style::default().fg(Color::DarkGray)
@@ -51,11 +52,11 @@ pub fn render(frame: &mut Frame, c: &Confession, area: Rect, selected: bool, has
         )));
     }
 
-    let text_style = if c.votes > 50 {
+    let text_style = if c.votes > consts::VOTES_MAGENTA {
         Style::default()
             .fg(Color::White)
             .add_modifier(Modifier::BOLD)
-    } else if c.votes > 10 {
+    } else if c.votes > consts::VOTES_CYAN {
         Style::default().fg(Color::White)
     } else {
         Style::default().fg(Color::Gray)
