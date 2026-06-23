@@ -24,14 +24,14 @@ cargo build --release
 EIPI_LISTEN=0.0.0.0:2222 ./target/release/eipi
 ```
 
-This is a fun weekend project, not a whistleblower platform. If you need true anonymity, use Tor.
+This is a fun weekend project, not a whistleblower platform. If you need true anonymity, use Tor or don't even use eipi i'm not tryna argue on this. 
 
 </details>
 
 <details>
 <summary><strong>Was this vibe coded?</strong></summary>
 
-No. I built this because I wanted to learn how to build SSH apps in Rust using [russh](https://github.com/Russh/russh) and [ratatui](https://github.com/ratatui/ratatui). My friends loved the idea so I ended up publishing it. Did I use LLMs at some points to help? Yeah — the same way I use Google, Stack Overflow, or docs. Every search engine has AI in it these days. I personally [don't like the idea of vibe coding](https://www.pwnwriter.me/syndications/ai-agents). The code is fully open source, go read it.
+No. I built this because I wanted to learn how to build SSH apps in Rust using [russh](https://github.com/Russh/russh) and [ratatui](https://github.com/ratatui/ratatui). My friends loved the idea so I ended up publishing it. Did I use LLMs at some points to help? Yeah, the same way I use Google, Stack Overflow, or docs. Every search engine has AI in it these days. I personally [don't like the idea of vibe coding](https://www.pwnwriter.me/syndications/ai-agents). The code is fully open source, go read it.
 
 </details>
 
