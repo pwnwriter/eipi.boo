@@ -4,4 +4,4 @@ pub struct Reply {
     pub name: String,
 }
 
-pub use crate::consts::MAX_REPLY_LENGTH as MAX_LENGTH;
+pub use crate::helper::consts::MAX_REPLY_LENGTH as MAX_LENGTH;

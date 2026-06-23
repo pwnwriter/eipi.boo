@@ -1,6 +1,6 @@
 use rusqlite::{Connection, Result as SqlResult, params};
 
-use crate::confession::Confession;
+use crate::model::confession::Confession;
 
 pub fn get_all(conn: &Connection) -> Vec<Confession> {
     let mut stmt = conn

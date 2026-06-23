@@ -1,3 +1,6 @@
+mod handler;
+pub(crate) mod input;
+
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
@@ -9,7 +12,7 @@ use log::info;
 use russh::server::{self, Server as _};
 
 use crate::db;
-use crate::handler::ClientHandler;
+use handler::ClientHandler;
 
 pub(crate) struct AppState {
     pub(crate) db: Mutex<rusqlite::Connection>,
@@ -70,7 +73,7 @@ pub async fn run() -> Result<()> {
         ..Default::default()
     });
 
-    crate::web::write_index();
+    crate::helper::web::write_index();
 
     info!("Starting eipi.boo SSH server on {}", listen_addr);
     info!(

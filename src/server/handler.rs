@@ -12,13 +12,14 @@ use russh::server::{self, Auth, Msg, Session};
 use russh::{Channel, ChannelId};
 use sha2::{Digest, Sha256};
 
-use crate::canvas;
-use crate::confession::{self, Confession};
 use crate::db;
-use crate::input::{InputMode, KeyEvent};
-use crate::reply::{self, Reply};
-use crate::server::AppState;
+use crate::model::confession::{self, Confession};
+use crate::model::reply::{self, Reply};
+use crate::tui::canvas;
 use crate::tui::{RenderState, TermWriter};
+
+use super::AppState;
+use super::input::{InputMode, KeyEvent};
 
 pub(crate) struct ClientHandler {
     pub(crate) shared: Arc<AppState>,
@@ -240,10 +241,10 @@ impl ClientHandler {
 
         if std::env::var("EIPI_NO_LIMIT").is_err() {
             let today = db::posts_today(&db, &fp);
-            if today >= crate::consts::DAILY_POST_LIMIT {
+            if today >= crate::helper::consts::DAILY_POST_LIMIT {
                 self.message = Some(format!(
                     "Rate limit: {} confessions per day",
-                    crate::consts::DAILY_POST_LIMIT
+                    crate::helper::consts::DAILY_POST_LIMIT
                 ));
                 return;
             }
@@ -284,16 +285,16 @@ impl ClientHandler {
                     self.mode = InputMode::ConfirmQuit;
                 }
                 (InputMode::Browse, KeyEvent::Up | KeyEvent::Char('k')) => {
-                    self.cam_y -= crate::consts::CAM_SPEED_Y
+                    self.cam_y -= crate::helper::consts::CAM_SPEED_Y
                 }
                 (InputMode::Browse, KeyEvent::Down | KeyEvent::Char('j')) => {
-                    self.cam_y += crate::consts::CAM_SPEED_Y
+                    self.cam_y += crate::helper::consts::CAM_SPEED_Y
                 }
                 (InputMode::Browse, KeyEvent::Left | KeyEvent::Char('h')) => {
-                    self.cam_x -= crate::consts::CAM_SPEED_X
+                    self.cam_x -= crate::helper::consts::CAM_SPEED_X
                 }
                 (InputMode::Browse, KeyEvent::Right | KeyEvent::Char('l')) => {
-                    self.cam_x += crate::consts::CAM_SPEED_X
+                    self.cam_x += crate::helper::consts::CAM_SPEED_X
                 }
                 (InputMode::Browse, KeyEvent::Tab) => self.cycle_selection(),
                 (InputMode::Browse, KeyEvent::Enter) => {
@@ -415,7 +416,8 @@ impl ClientHandler {
                 }
                 (InputMode::ComposeReply, KeyEvent::Char(c)) => {
                     if self.reply_name_phase {
-                        if self.reply_name_buf.len() < crate::consts::MAX_REPLY_NAME_LENGTH {
+                        if self.reply_name_buf.len() < crate::helper::consts::MAX_REPLY_NAME_LENGTH
+                        {
                             self.reply_name_buf.push(*c);
                         }
                     } else if self.compose_buf.len() < reply::MAX_LENGTH {
@@ -653,7 +655,7 @@ impl server::Handler for ClientHandler {
             return Ok(());
         }
 
-        let events = crate::input::parse(data);
+        let events = super::input::parse(data);
         if events.is_empty() {
             return Ok(());
         }

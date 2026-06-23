@@ -1,3 +1,4 @@
+pub(crate) mod canvas;
 mod card_view;
 mod compose;
 mod confession_box;
@@ -16,10 +17,9 @@ use ratatui::style::{Color, Style};
 use ratatui::widgets::Paragraph;
 use ratatui::{Frame, Terminal, TerminalOptions, Viewport};
 
-use crate::canvas;
-use crate::confession::{self, BOX_WIDTH, Confession};
-use crate::input::InputMode;
-use crate::reply::Reply;
+use crate::model::confession::{self, BOX_WIDTH, Confession};
+use crate::model::reply::Reply;
+use crate::server::input::InputMode;
 
 #[derive(Clone, Default)]
 pub struct TermWriter {

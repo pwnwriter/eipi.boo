@@ -4,8 +4,8 @@ use ratatui::style::{Color, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
-use crate::confession;
-use crate::consts;
+use crate::helper::consts;
+use crate::model::confession;
 
 use super::RenderState;
 

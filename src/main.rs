@@ -1,14 +1,8 @@
-mod blocked_items;
-mod canvas;
-mod confession;
-mod consts;
 mod db;
-mod handler;
-mod input;
-mod reply;
+mod helper;
+mod model;
 mod server;
 mod tui;
-mod web;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

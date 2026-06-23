@@ -29,9 +29,9 @@ pub fn time_ago(created_at: &str) -> String {
     }
 }
 
-pub use crate::consts::BOX_INNER_WIDTH;
-pub use crate::consts::BOX_WIDTH;
-pub use crate::consts::MAX_CONFESSION_LENGTH as MAX_LENGTH;
+pub use crate::helper::consts::BOX_INNER_WIDTH;
+pub use crate::helper::consts::BOX_WIDTH;
+pub use crate::helper::consts::MAX_CONFESSION_LENGTH as MAX_LENGTH;
 
 fn normalize(text: &str) -> String {
     text.to_lowercase()
@@ -50,7 +50,7 @@ fn normalize(text: &str) -> String {
 }
 
 pub fn is_allowed(text: &str) -> bool {
-    use crate::blocked_items::BLOCKED_WORDS;
+    use super::blocked_items::BLOCKED_WORDS;
 
     let normalized = normalize(text);
     let lower = text.to_lowercase();

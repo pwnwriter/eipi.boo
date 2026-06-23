@@ -4,8 +4,8 @@ use ratatui::style::{Color, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::Paragraph;
 
-use crate::confession;
-use crate::input::InputMode;
+use crate::model::confession;
+use crate::server::input::InputMode;
 
 use super::RenderState;
 
@@ -123,7 +123,11 @@ pub fn render(frame: &mut Frame, state: &RenderState, area: Rect) {
                 spans.extend(hint("esc", "cancel"));
             } else {
                 spans.push(Span::styled(
-                    format!("{}/{}", state.compose_buf.len(), crate::reply::MAX_LENGTH),
+                    format!(
+                        "{}/{}",
+                        state.compose_buf.len(),
+                        crate::model::reply::MAX_LENGTH
+                    ),
                     Style::default().fg(DIM),
                 ));
                 spans.push(Span::raw("   "));

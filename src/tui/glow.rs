@@ -2,8 +2,8 @@ use ratatui::Frame;
 use ratatui::layout::Rect;
 use ratatui::style::{Color, Style};
 
-use crate::confession::{self, Confession};
-use crate::consts;
+use crate::helper::consts;
+use crate::model::confession::{self, Confession};
 
 const SPARKLES: [char; 4] = ['✦', '✧', '·', '*'];
 

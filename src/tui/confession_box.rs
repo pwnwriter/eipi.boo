@@ -4,8 +4,8 @@ use ratatui::style::{Color, Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, Paragraph, Wrap};
 
-use crate::confession::{self, Confession};
-use crate::consts;
+use crate::helper::consts;
+use crate::model::confession::{self, Confession};
 
 pub fn render(frame: &mut Frame, c: &Confession, area: Rect, selected: bool, has_voted: bool) {
     let border_style = if selected {

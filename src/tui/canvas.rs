@@ -1,6 +1,6 @@
 use rand::RngExt;
 
-use crate::confession::{BOX_WIDTH, Confession, confession_height};
+use crate::model::confession::{BOX_WIDTH, Confession, confession_height};
 
 pub fn visible_confessions(
     confessions: &[Confession],

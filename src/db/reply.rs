@@ -1,6 +1,6 @@
 use rusqlite::{Connection, Result as SqlResult, params};
 
-use crate::reply::Reply;
+use crate::model::reply::Reply;
 
 pub fn get_replies(conn: &Connection, confession_id: i64) -> Vec<Reply> {
     let mut stmt = conn
