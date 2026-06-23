@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 russh = "0.61"
-ratatui = "0.29"
+ratatui = "0.30"
 crossterm = "0.28"
 rusqlite = { version = "0.40", features = ["bundled"] }
 tokio = { version = "1", features = ["full"] }
