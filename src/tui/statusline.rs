@@ -77,6 +77,7 @@ pub fn render(frame: &mut Frame, state: &RenderState, area: Rect) {
     match state.mode {
         InputMode::Browse => {
             spans.extend(hint("↑↓/jk", "scroll"));
+            spans.extend(hint("G", "last"));
             spans.extend(hint("tab", "select"));
             spans.extend(hint("v", "vote"));
             spans.extend(hint("⏎", "replies"));

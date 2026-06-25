@@ -336,6 +336,14 @@ impl ClientHandler {
                     self.card_index = self.selected.unwrap_or(0);
                     self.mode = InputMode::CardView;
                 }
+                (InputMode::Browse, KeyEvent::Char('G')) => {
+                    if let Some(last_idx) = self.confessions.len().checked_sub(1) {
+                        let last = &self.confessions[last_idx];
+                        self.cam_x = last.x - self.width as i64 / 2;
+                        self.cam_y = last.y - self.height as i64 / 2;
+                        self.selected = Some(last_idx);
+                    }
+                }
 
                 (InputMode::CardView, KeyEvent::Right | KeyEvent::Char('l'))
                     if !self.confessions.is_empty() =>
