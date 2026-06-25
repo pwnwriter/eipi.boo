@@ -5,7 +5,7 @@ use crate::model::reply::Reply;
 pub fn get_replies(conn: &Connection, confession_id: i64) -> Vec<Reply> {
     let mut stmt = conn
         .prepare(
-            "SELECT text, COALESCE(name, 'anon')
+            "SELECT text, COALESCE(name, 'anon'), created_at
              FROM replies WHERE confession_id = ?1 ORDER BY id",
         )
         .unwrap();
@@ -13,6 +13,7 @@ pub fn get_replies(conn: &Connection, confession_id: i64) -> Vec<Reply> {
         Ok(Reply {
             text: row.get(0)?,
             name: row.get(1)?,
+            replied_at: row.get(2)?,
         })
     })
     .unwrap()

@@ -65,9 +65,14 @@ pub fn render(frame: &mut Frame, state: &RenderState, area: Rect) {
                 break;
             }
 
+            let age = confession::time_ago(&reply.replied_at);
             let name_line = Line::from(vec![
                 Span::styled("  ↳ ", Style::default().fg(Color::DarkGray)),
                 Span::styled(&reply.name, Style::default().fg(Color::Cyan)),
+                Span::styled(
+                    format!("  {}", age),
+                    Style::default().fg(Color::Indexed(242)),
+                ),
             ]);
             frame.render_widget(
                 Paragraph::new(name_line),
