@@ -2,6 +2,12 @@
   <h1><code>$ ssh eipi.boo</code></h1> 
 </div>
 
+
+
+https://github.com/user-attachments/assets/c5d62780-fa3a-46f6-9192-b60987526d7d
+
+
+
 <details>
 <summary><strong>Security & Privacy</strong></summary>
 
