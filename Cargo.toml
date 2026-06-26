@@ -14,5 +14,5 @@ anyhow = "1"
 log = "0.4"
 env_logger = "0.11"
 chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
-sha2 = "0.10"
+sha2 = "0.11"
 parking_lot = "0.12"

@@ -868,7 +868,7 @@ dependencies = [
  "ratatui",
  "rusqlite",
  "russh",
- "sha2 0.10.9",
+ "sha2 0.11.0",
  "tokio",
 ]
 
