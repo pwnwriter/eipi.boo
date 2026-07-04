@@ -67,30 +67,32 @@ pub fn render_search(frame: &mut Frame, buf: &str, area: Rect, theme: &Theme) {
     text_input(frame, buf, "Type to search confessions...", inner, theme);
 }
 
-pub fn render_quit(frame: &mut Frame, area: Rect, theme: &Theme) {
+pub fn render_quit(frame: &mut Frame, area: Rect, theme: &Theme, created_confession: bool) {
     let popup = centered_popup(frame, area, 40, 7);
     let block = Block::bordered().border_style(Style::default().fg(theme.heart));
     let inner = block.inner(popup);
     frame.render_widget(block, popup);
 
-    let lines = vec![
+    let mut lines = vec![
         Line::from(""),
         Line::from(Span::styled(
             "wait, leaving already? :(",
             Style::default().fg(theme.text).add_modifier(Modifier::BOLD),
         )),
-        Line::from(Span::styled(
+    ];
+    if !created_confession {
+        lines.push(Line::from(Span::styled(
             "did you confess something?",
             Style::default().fg(theme.text_dim),
-        )),
-        Line::from(""),
-        Line::from(vec![
-            Span::styled("q/⏎ ", Style::default().fg(theme.heart)),
-            Span::styled("leave   ", Style::default().fg(theme.text_dim)),
-            Span::styled("any key ", Style::default().fg(theme.online)),
-            Span::styled("stay", Style::default().fg(theme.text_dim)),
-        ]),
-    ];
+        )));
+    }
+    lines.push(Line::from(""));
+    lines.push(Line::from(vec![
+        Span::styled("q/⏎ ", Style::default().fg(theme.heart)),
+        Span::styled("leave   ", Style::default().fg(theme.text_dim)),
+        Span::styled("any key ", Style::default().fg(theme.online)),
+        Span::styled("stay", Style::default().fg(theme.text_dim)),
+    ]));
 
     frame.render_widget(Paragraph::new(lines).alignment(Alignment::Center), inner);
 }

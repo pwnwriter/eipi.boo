@@ -41,6 +41,7 @@ pub(crate) struct ClientHandler {
     reply_scroll: usize,
     card_index: usize,
     came_from_card: bool,
+    created_confession: bool,
     message: Option<String>,
     help_return_mode: InputMode,
     reaction_return_mode: InputMode,
@@ -78,6 +79,7 @@ impl ClientHandler {
             reply_scroll: 0,
             card_index: 0,
             came_from_card: false,
+            created_confession: false,
             message: None,
             help_return_mode: InputMode::Browse,
             reaction_return_mode: InputMode::Browse,
@@ -272,6 +274,7 @@ impl ClientHandler {
 
         match db::insert(&db, &text, x, y, &fp) {
             Ok(_) => {
+                self.created_confession = true;
                 self.message = Some("Confession posted!".to_string());
                 self.cam_x = x - self.width as i64 / 2;
                 self.cam_y = y - self.height as i64 / 2;
@@ -773,6 +776,7 @@ impl ClientHandler {
             reply_scroll: self.reply_scroll,
             card_index: self.card_index,
             came_from_card: self.came_from_card,
+            created_confession: self.created_confession,
             search_buf: &self.search_buf,
             search_result_count: self.search_results.len(),
             search_index: self.search_index,
@@ -987,6 +991,7 @@ impl server::Handler for ClientHandler {
                         reply_scroll: 0,
                         card_index: 0,
                         came_from_card: false,
+                        created_confession: false,
                         search_buf: "",
                         search_result_count: 0,
                         search_index: 0,
@@ -1065,6 +1070,7 @@ impl server::Handler for ClientHandler {
                         reply_scroll: 0,
                         card_index: 0,
                         came_from_card: false,
+                        created_confession: false,
                         search_buf: "",
                         search_result_count: 0,
                         search_index: 0,

@@ -87,6 +87,7 @@ pub struct RenderState<'a> {
     pub reply_scroll: usize,
     pub card_index: usize,
     pub came_from_card: bool,
+    pub created_confession: bool,
     pub search_buf: &'a str,
     pub search_result_count: usize,
     pub search_index: usize,
@@ -239,7 +240,7 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
     }
 
     if effective_mode == InputMode::ConfirmQuit {
-        compose::render_quit(frame, area, theme);
+        compose::render_quit(frame, area, theme, state.created_confession);
     }
 
     if effective_mode == InputMode::ThemePicker {

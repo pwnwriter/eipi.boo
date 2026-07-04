@@ -11,3 +11,6 @@ server.log
 eipi.db
 assets/
 web
+
+# direnv
+.direnv
