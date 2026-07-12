@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-russh = "0.61"
+russh = "0.62"
 ratatui = "0.30"
 crossterm = "0.29"
 rusqlite = { version = "0.40", features = ["bundled"] }
