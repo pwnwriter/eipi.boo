@@ -8,8 +8,12 @@
 
 built with [russh](https://github.com/Eugeny/russh) + [ratatui](https://github.com/ratatui/ratatui) in rust.
 
-https://github.com/user-attachments/assets/c5d62780-fa3a-46f6-9192-b60987526d7d
+## Pronunciation
 
+**eipi.boo**
+
+> /ˌiː piː ˈbuː/  
+> **ee PEE BOO**
 
 ## keybinds
 
