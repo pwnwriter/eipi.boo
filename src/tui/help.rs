@@ -8,12 +8,15 @@ use super::keybinds::HELP_KEYBINDS;
 use super::theme::Theme;
 
 pub fn render(frame: &mut Frame, area: Rect, theme: &Theme) {
-    let popup = centered_popup(frame, area, 60, 20);
+    // header chrome (7 rows) + keybinds + trailing rule + link
+    let n = HELP_KEYBINDS.len();
+    let total_rows = 9 + n;
+    let popup = centered_popup(frame, area, 60, total_rows as u16 + 2);
     let block = Block::bordered().border_style(Style::default().fg(theme.border));
     let inner = block.inner(popup);
     frame.render_widget(block, popup);
 
-    let rows = Layout::vertical(vec![Constraint::Length(1); 21]).split(inner);
+    let rows = Layout::vertical(vec![Constraint::Length(1); total_rows]).split(inner);
 
     render_line(
         frame,
@@ -49,10 +52,10 @@ pub fn render(frame: &mut Frame, area: Rect, theme: &Theme) {
         render_keybind_row(frame, rows[7 + i], hint.key, hint.label, theme);
     }
 
-    render_rule(frame, rows[19], theme);
+    render_rule(frame, rows[7 + n], theme);
     render_line(
         frame,
-        rows[20],
+        rows[8 + n],
         Line::from(Span::styled(
             " github.com/pwnwriter/eipi.boo/issues/new",
             Style::default().fg(theme.text_dim),

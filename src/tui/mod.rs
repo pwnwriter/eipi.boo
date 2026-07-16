@@ -4,6 +4,7 @@ mod compose;
 mod confession_box;
 mod help;
 mod keybinds;
+mod minimap;
 mod reaction_picker;
 mod reactions;
 mod reply_panel;
@@ -96,6 +97,7 @@ pub struct RenderState<'a> {
     pub theme_picker_index: usize,
     pub reaction_picker_index: usize,
     pub render_tick: u64,
+    pub minimap_open: bool,
 }
 
 pub fn render(frame: &mut Frame, state: &RenderState) {
@@ -219,6 +221,19 @@ pub fn render(frame: &mut Frame, state: &RenderState) {
         let cy = canvas_area.y + canvas_area.height / 2;
         let hw = 50.min(canvas_area.width);
         frame.render_widget(hint, Rect::new(cx, cy, hw, 1));
+    }
+
+    if state.minimap_open {
+        minimap::render(
+            frame,
+            state.confessions,
+            state.cam_x,
+            state.cam_y,
+            canvas_area.width,
+            canvas_area.height,
+            canvas_area,
+            theme,
+        );
     }
 
     if let Some(rarea) = reply_area {

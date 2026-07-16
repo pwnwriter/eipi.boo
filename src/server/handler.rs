@@ -54,6 +54,7 @@ pub(crate) struct ClientHandler {
     splash_done: Arc<std::sync::atomic::AtomicBool>,
     theme_index: usize,
     theme_picker_index: usize,
+    minimap_open: bool,
     terminal: Option<Terminal<CrosstermBackend<TermWriter>>>,
     writer: TermWriter,
 }
@@ -92,6 +93,7 @@ impl ClientHandler {
             splash_done: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             theme_index: 0,
             theme_picker_index: 0,
+            minimap_open: false,
             terminal: None,
             writer: TermWriter::default(),
         }
@@ -437,6 +439,7 @@ impl ClientHandler {
                 self.open_replies();
             }
             KeyEvent::Char('n') => self.open_compose(false),
+            KeyEvent::Char('m') => self.minimap_open = !self.minimap_open,
             KeyEvent::MouseClick(sx, sy) => self.select_at_screen(*sx, *sy),
             KeyEvent::Char(' ') if !self.confessions.is_empty() => {
                 self.card_index = self.selected.unwrap_or(0);
@@ -785,6 +788,7 @@ impl ClientHandler {
             theme_picker_index: self.theme_picker_index,
             reaction_picker_index: self.reaction_picker_index,
             render_tick: chrono::Utc::now().timestamp() as u64,
+            minimap_open: self.minimap_open,
         };
 
         match terminal.draw(|frame| {
@@ -1000,6 +1004,7 @@ impl server::Handler for ClientHandler {
                         theme_picker_index: 0,
                         reaction_picker_index: 0,
                         render_tick: chrono::Utc::now().timestamp() as u64,
+                        minimap_open: false,
                     };
                     let _ = term.draw(|frame| {
                         crate::tui::render(frame, &state);
@@ -1079,6 +1084,7 @@ impl server::Handler for ClientHandler {
                         theme_picker_index: 0,
                         reaction_picker_index: 0,
                         render_tick: chrono::Utc::now().timestamp() as u64,
+                        minimap_open: false,
                     };
                     let _ = term.draw(|frame| {
                         crate::tui::render(frame, &state);

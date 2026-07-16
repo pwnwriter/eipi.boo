@@ -55,6 +55,10 @@ pub const HELP_KEYBINDS: &[KeybindHint] = &[
         key: "s",
         label: "share link",
     },
+    KeybindHint {
+        key: "m",
+        label: "toggle minimap",
+    },
 ];
 
 const BROWSE_HINTS: &[KeybindHint] = &[
