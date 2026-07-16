@@ -291,22 +291,53 @@ fn build_ascii_card(
     lines.join("\n")
 }
 
+fn build_replies_html(replies: &[crate::model::reply::Reply]) -> String {
+    if replies.is_empty() {
+        return String::new();
+    }
+
+    let mut out = format!(
+        "<div class=\"replies\"><div class=\"replies-head\">↩ {} {}</div>",
+        replies.len(),
+        if replies.len() == 1 {
+            "reply"
+        } else {
+            "replies"
+        },
+    );
+
+    for reply in replies {
+        let age = crate::model::confession::time_ago(&reply.replied_at);
+        out.push_str(&format!(
+            "<div class=\"reply\"><div class=\"reply-head\"><span class=\"reply-name\">{}</span><span class=\"reply-time\">· {}</span></div><div class=\"reply-text\">{}</div></div>",
+            html_escape(&reply.name),
+            html_escape(&age),
+            html_escape(&reply.text),
+        ));
+    }
+
+    out.push_str("</div>");
+    out
+}
+
 fn confession_page(
     id: i64,
     text: &str,
     age: &str,
     love: i64,
     reactions: i64,
-    replies: i64,
+    replies: &[crate::model::reply::Reply],
     total: i64,
 ) -> String {
+    let reply_count = replies.len() as i64;
     let truncated: String = text.chars().take(160).collect();
     let og_desc = format!(
         "{} | {} reactions, {} replies",
-        truncated, reactions, replies
+        truncated, reactions, reply_count
     );
     let position = format!("{}/{}", id, total);
-    let ascii_card = build_ascii_card(text, age, love, replies, reactions, &position);
+    let ascii_card = build_ascii_card(text, age, love, reply_count, reactions, &position);
+    let replies_html = build_replies_html(replies);
 
     format!(
         r#"<!DOCTYPE html>
@@ -402,10 +433,51 @@ fn confession_page(
     .actions .share-row button {{
       padding: 0.5rem 0.7rem;
     }}
+    .replies {{
+      width: 100%;
+      max-width: 480px;
+      margin: 2rem auto 0;
+      padding: 0 1rem;
+    }}
+    .replies-head {{
+      color: #56949f;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }}
+    .reply {{
+      background: #f2e9e1;
+      border-left: 2px solid #907aa9;
+      border-radius: 4px;
+      padding: 0.6rem 0.9rem;
+      margin-bottom: 0.6rem;
+    }}
+    .reply-head {{
+      display: flex;
+      gap: 0.5rem;
+      align-items: baseline;
+      margin-bottom: 0.3rem;
+    }}
+    .reply-name {{
+      color: #907aa9;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }}
+    .reply-time {{
+      color: #9893a5;
+      font-size: 0.75rem;
+    }}
+    .reply-text {{
+      color: #575279;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }}
   </style>
 </head>
 <body>
   <pre class="ascii" id="card">{}</pre>
+  {}
   <div class="cta">
     <p style="color: #9893a5; font-size: 0.85rem; margin-bottom: 0.5rem;">react and reply over ssh</p>
     <div class="cmd"><code>$ ssh eipi.boo</code></div>
@@ -503,6 +575,7 @@ fn confession_page(
         id,
         html_escape(&og_desc),
         ascii_card,
+        replies_html,
         id,
         id,
     )
@@ -545,6 +618,7 @@ async fn confession(Path(id): Path<i64>, State(state): State<Arc<AppState>>) -> 
     let age = crate::model::confession::time_ago(&c.created_at);
     let reactions: i64 = c.reactions.iter().map(|r| r.count).sum();
     let love = crate::model::confession::love_reactions(&c);
+    let replies = crate::db::get_replies(&db, id);
     let stats = crate::db::stats(&db);
     drop(db);
 
@@ -554,7 +628,7 @@ async fn confession(Path(id): Path<i64>, State(state): State<Arc<AppState>>) -> 
         &age,
         love,
         reactions,
-        c.reply_count,
+        &replies,
         stats.confessions,
     );
     (
