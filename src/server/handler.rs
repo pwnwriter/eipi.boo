@@ -43,6 +43,7 @@ pub(crate) struct ClientHandler {
     came_from_card: bool,
     created_confession: bool,
     message: Option<String>,
+    share_link: Option<String>,
     help_return_mode: InputMode,
     reaction_return_mode: InputMode,
     reaction_picker_index: usize,
@@ -82,6 +83,7 @@ impl ClientHandler {
             came_from_card: false,
             created_confession: false,
             message: None,
+            share_link: None,
             help_return_mode: InputMode::Browse,
             reaction_return_mode: InputMode::Browse,
             reaction_picker_index: 0,
@@ -379,10 +381,15 @@ impl ClientHandler {
     }
 
     fn show_share_link(&mut self) {
+        // toggle: press s to reveal the link, s again to hide it
+        if self.share_link.is_some() {
+            self.share_link = None;
+            return;
+        }
         let base =
             std::env::var("EIPI_BASE_URL").unwrap_or_else(|_| "https://eipi.boo".to_string());
         if let Some(id) = self.selected_confession_id() {
-            self.message = Some(format!("{}/c/{}", base, id));
+            self.share_link = Some(format!("{}/c/{}", base, id));
         }
     }
 
@@ -771,6 +778,7 @@ impl ClientHandler {
             reply_name_buf: &self.reply_name_buf,
             reply_name_phase: self.reply_name_phase,
             message: self.message.as_deref(),
+            share_link: self.share_link.as_deref(),
             total_confessions,
             total_humans,
             online: self.shared.online.load(Ordering::Relaxed),
@@ -987,6 +995,7 @@ impl server::Handler for ClientHandler {
                         reply_name_buf: "",
                         reply_name_phase: false,
                         message: None,
+                        share_link: None,
                         total_confessions: 0,
                         total_humans: 0,
                         online: shared.online.load(Ordering::Relaxed),
@@ -1067,6 +1076,7 @@ impl server::Handler for ClientHandler {
                         reply_name_buf: "",
                         reply_name_phase: false,
                         message: None,
+                        share_link: None,
                         total_confessions,
                         total_humans,
                         online: shared.online.load(Ordering::Relaxed),

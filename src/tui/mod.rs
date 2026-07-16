@@ -80,6 +80,7 @@ pub struct RenderState<'a> {
     pub reply_name_buf: &'a str,
     pub reply_name_phase: bool,
     pub message: Option<&'a str>,
+    pub share_link: Option<&'a str>,
     pub total_confessions: i64,
     pub total_humans: i64,
     pub online: usize,

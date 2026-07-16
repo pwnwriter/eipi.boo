@@ -62,6 +62,22 @@ pub fn render(frame: &mut Frame, state: &RenderState, area: Rect) {
         return;
     }
 
+    if let Some(link) = state.share_link
+        && matches!(
+            state.mode,
+            InputMode::Browse | InputMode::CardView | InputMode::ViewReplies
+        )
+    {
+        let line = Line::from(vec![
+            Span::styled("share ", Style::default().fg(theme.text_dim)),
+            Span::styled(link, Style::default().fg(theme.accent_search)),
+            Span::styled("  ·  s to hide", Style::default().fg(theme.text_dim)),
+        ])
+        .centered();
+        frame.render_widget(Paragraph::new(line), hints_area);
+        return;
+    }
+
     let mut leading: Vec<Span> = Vec::new();
 
     match state.mode {

@@ -53,7 +53,7 @@ pub const HELP_KEYBINDS: &[KeybindHint] = &[
     },
     KeybindHint {
         key: "s",
-        label: "share link",
+        label: "toggle share link",
     },
     KeybindHint {
         key: "m",
